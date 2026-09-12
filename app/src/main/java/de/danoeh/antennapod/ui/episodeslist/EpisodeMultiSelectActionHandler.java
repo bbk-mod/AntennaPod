@@ -32,6 +32,7 @@ public class EpisodeMultiSelectActionHandler {
     private final Activity activity;
     private final int actionId;
     private int totalNumItems = 0;
+    private FeedItem lastInsertedAfterCurrent = null;
 
     public EpisodeMultiSelectActionHandler(Activity activity, int actionId) {
         this.activity = activity;
@@ -41,6 +42,8 @@ public class EpisodeMultiSelectActionHandler {
     public void handleAction(List<FeedItem> items) {
         if (actionId == R.id.add_to_queue_item) {
             queueChecked(items);
+        } else if (actionId == R.id.add_after_currently_playing_item) {
+            queueAfterCurrentChecked(items);
         } else if (actionId == R.id.remove_from_queue_item) {
             removeFromQueueChecked(items);
         } else if (actionId == R.id.remove_inbox_item) {
@@ -80,6 +83,23 @@ public class EpisodeMultiSelectActionHandler {
         }
         DBWriter.addQueueItem(activity, toQueue.toArray(new FeedItem[0]));
         showMessage(R.plurals.added_to_queue_message, toQueue.size());
+    }
+
+    private void queueAfterCurrentChecked(List<FeedItem> items) {
+        final long currentlyPlayingMediaId = PlaybackPreferences.getCurrentlyPlayingFeedMediaId();
+        List<FeedItem> afterCurrent = new ArrayList<>();
+        for (FeedItem episode : items) {
+            if (episode.hasMedia() && episode.getMedia().getId() != currentlyPlayingMediaId) {
+                afterCurrent.add(episode);
+            }
+        }
+        if (afterCurrent.isEmpty()) {
+            return;
+        }
+        DBWriter.addQueueItemAfter(activity, lastInsertedAfterCurrent,
+                afterCurrent.toArray(new FeedItem[0]));
+        lastInsertedAfterCurrent = afterCurrent.get(afterCurrent.size() - 1);
+        showMessage(R.plurals.added_after_currently_playing_message, afterCurrent.size());
     }
 
     private void removeFromQueueChecked(List<FeedItem> items) {

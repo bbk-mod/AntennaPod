@@ -9,7 +9,9 @@ build/
 **/*.project
 **/*.classpath
 local.properties
+.android-sdk/
 .gradle
+.gradle-home/
 build.xml
 *~
 .metadata

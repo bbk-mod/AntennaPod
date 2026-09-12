@@ -278,6 +278,11 @@
         <item quantity="one">%d episode added to queue.</item>
         <item quantity="other">%d episodes added to queue.</item>
     </plurals>
+    <string name="add_after_currently_playing_label">Add after currently playing</string>
+    <plurals name="added_after_currently_playing_message">
+        <item quantity="one">%d episode will play next.</item>
+        <item quantity="other">%d episodes will play next.</item>
+    </plurals>
     <string name="remove_from_queue_label">Remove from queue</string>
     <plurals name="removed_from_queue_message">
         <item quantity="one">%d episode removed from queue.</item>

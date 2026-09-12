@@ -42,6 +42,7 @@ import de.danoeh.antennapod.event.QueueEvent;
 import de.danoeh.antennapod.event.FeedEvent;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
+import de.danoeh.antennapod.storage.preferences.UserPreferences.EnqueueLocation;
 import de.danoeh.antennapod.model.download.DownloadResult;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -363,6 +364,77 @@ public class DBWriter {
                 }
             }
 
+            adapter.close();
+            AutoDownloadManager.getInstance().autodownloadUndownloadedItems(context);
+        });
+    }
+
+    public static Future<?> addQueueItemAfterCurrentlyPlaying(final Context context, final FeedItem... items) {
+        return addQueueItemAfter(context, null, items);
+    }
+
+    public static Future<?> addQueueItemAfter(final Context context, @Nullable final FeedItem anchorItem,
+                                              final FeedItem... items) {
+        return runOnDbThread(() -> {
+            if (items.length < 1) {
+                return;
+            }
+
+            final PodDBAdapter adapter = PodDBAdapter.getInstance();
+            adapter.open();
+            final List<FeedItem> queue = DBReader.getQueue();
+
+            final FeedMedia currentlyPlaying = DBReader.getFeedMedia(
+                    PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
+            final long currentlyPlayingItemId = currentlyPlaying == null ? -1 : currentlyPlaying.getItemId();
+
+            final List<FeedItem> itemsToInsert = new ArrayList<>();
+            final List<QueueEvent> events = new ArrayList<>();
+            final List<FeedItem> updatedItems = new ArrayList<>();
+            final List<FeedItem> markAsUnplayed = new ArrayList<>();
+            for (FeedItem item : items) {
+                if (!item.hasMedia() || item.getId() == currentlyPlayingItemId) {
+                    continue;
+                }
+                if (indexInItemList(itemsToInsert, item.getId()) >= 0) {
+                    continue;
+                }
+                int existingPosition = indexInItemList(queue, item.getId());
+                if (existingPosition >= 0) {
+                    queue.remove(existingPosition);
+                    events.add(QueueEvent.removed(item));
+                }
+                itemsToInsert.add(item);
+            }
+            if (itemsToInsert.isEmpty()) {
+                adapter.close();
+                return;
+            }
+
+            final long anchorItemId = anchorItem == null ? currentlyPlayingItemId : anchorItem.getId();
+            final int anchorPosition = indexInItemList(queue, anchorItemId);
+            int insertPosition = anchorPosition >= 0
+                    ? anchorPosition + 1
+                    : new ItemEnqueuePositionCalculator(EnqueueLocation.AFTER_CURRENTLY_PLAYING)
+                            .calcPosition(queue, currentlyPlaying);
+            for (FeedItem item : itemsToInsert) {
+                queue.add(insertPosition, item);
+                events.add(QueueEvent.added(item, insertPosition));
+
+                item.addTag(FeedItem.TAG_QUEUE);
+                updatedItems.add(item);
+                if (item.isNew()) {
+                    markAsUnplayed.add(item);
+                }
+                insertPosition++;
+            }
+
+            adapter.setQueue(queue);
+            for (QueueEvent event : events) {
+                EventBus.getDefault().post(event);
+            }
+            EventBus.getDefault().post(new FeedItemEvent(updatedItems, false));
+            DBWriter.markItemsPlayed(FeedItem.UNPLAYED, false, markAsUnplayed);
             adapter.close();
             AutoDownloadManager.getInstance().autodownloadUndownloadedItems(context);
         });

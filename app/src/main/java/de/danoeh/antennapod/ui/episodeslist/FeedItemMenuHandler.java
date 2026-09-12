@@ -72,6 +72,8 @@ public class FeedItemMenuHandler {
         boolean canRemoveFavorite = false;
         boolean canShowTranscript = false;
         boolean canShowSocialInteract = false;
+        final long currentlyPlayingMediaId = PlaybackPreferences.getCurrentlyPlayingFeedMediaId();
+        boolean canAddAfterCurrentlyPlaying = false;
 
         for (FeedItem item : selectedItems) {
             final boolean hasMedia = item.getMedia() != null;
@@ -92,7 +94,10 @@ public class FeedItemMenuHandler {
             canRemoveFavorite |= item.isTagged(FeedItem.TAG_FAVORITE);
             canShowTranscript |= item.hasTranscript();
             canShowSocialInteract |= item.getSocialInteractUrl() != null;
+            canAddAfterCurrentlyPlaying |= hasMedia && item.getMedia().getId() != currentlyPlayingMediaId;
         }
+        canAddAfterCurrentlyPlaying &= currentlyPlayingMediaId != PlaybackPreferences.NO_MEDIA_PLAYING
+                && !UserPreferences.isQueueLocked() && !UserPreferences.isQueueKeepSorted();
 
         if (selectedItems.size() > 1) {
             canVisitWebsite = false;
@@ -107,6 +112,7 @@ public class FeedItemMenuHandler {
         setItemVisibility(menu, R.id.skip_episode_item, canSkip);
         setItemVisibility(menu, R.id.remove_from_queue_item, canRemoveFromQueue);
         setItemVisibility(menu, R.id.add_to_queue_item, canAddToQueue);
+        setItemVisibility(menu, R.id.add_after_currently_playing_item, canAddAfterCurrentlyPlaying);
         setItemVisibility(menu, R.id.visit_website_item, canVisitWebsite);
         setItemVisibility(menu, R.id.share_item, canShare);
         setItemVisibility(menu, R.id.remove_inbox_item, canRemoveFromInbox);
@@ -197,6 +203,8 @@ public class FeedItemMenuHandler {
                     .handleAction(Collections.singletonList(selectedItem));
         } else if (menuItemId == R.id.add_to_queue_item) {
             DBWriter.addQueueItem(context, selectedItem);
+        } else if (menuItemId == R.id.add_after_currently_playing_item) {
+            DBWriter.addQueueItemAfterCurrentlyPlaying(context, selectedItem);
         } else if (menuItemId == R.id.remove_from_queue_item) {
             DBWriter.removeQueueItem(context, true, selectedItem);
         } else if (menuItemId == R.id.add_to_favorites_item) {

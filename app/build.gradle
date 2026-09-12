@@ -12,8 +12,8 @@ android {
         // Version code schema:
         // "1.2.3-beta4"    -> 1020304
         // "1.2.3"          -> 1020395
-        versionCode 3120195
-        versionName "3.12.1"
+        versionCode 3120295
+        versionName "3.12.2"
     }
 
     signingConfigs {
@@ -36,7 +36,9 @@ android {
             resValue "string", "provider_authority", "de.danoeh.antennapod.provider"
             minifyEnabled true
             shrinkResources true
-            signingConfig signingConfigs.releaseConfig
+            if (signingConfigs.releaseConfig.storeFile.exists()) {
+                signingConfig signingConfigs.releaseConfig
+            }
             testProguardFiles "proguard-test.cfg"
         }
     }
