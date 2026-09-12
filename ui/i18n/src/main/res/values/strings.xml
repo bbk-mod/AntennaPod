@@ -639,6 +639,8 @@
     <!-- About screen -->
     <string name="about_pref">About</string>
     <string name="antennapod_version">AntennaPod version</string>
+    <string name="about_fork_notice_title">Modified version</string>
+    <string name="about_fork_notice_summary">This is an unofficial version of AntennaPod, modified since 2026-09-12 and licensed under the GNU General Public License v3. It is not supported by the AntennaPod team.</string>
     <string name="contributors">Contributors</string>
     <string name="contributors_summary">Everyone can help to make AntennaPod better - with code, translations or by helping users in our forum</string>
     <string name="developers">Developers</string>

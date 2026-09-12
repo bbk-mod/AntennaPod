@@ -7,7 +7,9 @@
 [![Translations on Weblate](https://hosted.weblate.org/widget/antennapod/app/svg-badge.svg?native=1)](https://hosted.weblate.org/engage/antennapod/)
 [![Good first issue](https://img.shields.io/github/issues-search?query=repo%3AAntennaPod%2FAntennaPod%20is%3Aopen%20is%3Aissue%20label%3A%22Good%20first%20issue%22&label=Good%20first%20issue&labelColor=grey&color=%235F1984)](https://github.com/AntennaPod/AntennaPod/labels/Good%20first%20issue)
 
-This is the official repository of AntennaPod, the easy-to-use, flexible and open-source podcast manager for Android.
+> **This is a modified fork of AntennaPod, not the official repository.** See [Modified fork](#modified-fork) below.
+
+AntennaPod is the easy-to-use, flexible and open-source podcast manager for Android. Its official repository is at [AntennaPod/AntennaPod](https://github.com/AntennaPod/AntennaPod).
 
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
       alt="Get it on Google Play"
@@ -29,9 +31,21 @@ We also hold regular community calls to discuss anything AntennaPod-related. [Co
 ## Help to test AntennaPod
 AntennaPod has many users and we don't want them to run into trouble when we add a new feature. It's important that we have a significant group test our app, so that we know all possible combinations of phones, Android versions and use cases work as expected. Check out our wiki on how to join our [Beta testing program](https://antennapod.org/documentation/general/beta)! If a bug is reported during the beta period, chances are high that it will be fixed before the upcoming stable version. If it is reported later, fixing might take another full beta cycle. So definitely let us know if something is not right.
 
+## Modified fork
+
+This repository is a **modified fork** of [AntennaPod](https://github.com/AntennaPod/AntennaPod),
+maintained for personal use. It is not affiliated with the AntennaPod project, is not supported by
+the AntennaPod team, and publishes no releases to Google Play or F-Droid. The application ID is
+`antennapod.bbk`, so it installs alongside the official app.
+
+Modifications to the upstream code start 2026-09-12. In accordance with section 5(a) of the GNU
+General Public License v3, this notice records that the work has been changed, and the upstream
+copyright notices are retained.
+
 ## License
 
-AntennaPod is licensed under the GNU General Public License (GPL-3.0). You can find the license text in the [LICENSE](https://github.com/AntennaPod/AntennaPod/blob/develop/LICENSE) file.
+AntennaPod is licensed under the GNU General Public License (GPL-3.0). You can find the license text in the [LICENSE](LICENSE) file.
+This fork is distributed under the same license, GPL-3.0.
 
 ## Translating AntennaPod
 

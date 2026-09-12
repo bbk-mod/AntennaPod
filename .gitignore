@@ -27,6 +27,7 @@ proguard
 libs
 *.DS_Store
 gradle.properties
+keystore
 *.keystore
 *.p12
 .vscode
